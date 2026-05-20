@@ -43,3 +43,7 @@ python app.py
 - `clock_engine/scheduler.py`：轮询与周期任务
 - `clock_engine/models.py`：任务与反馈模型
 
+
+- `clock_engine/engine.py`：统一业务入口（提交意图/状态快照）
+- `clock_engine/storage.py`：JSON 状态持久化组件
+- `tests/test_engine.py`：核心流程测试

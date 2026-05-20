@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from datetime import datetime
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from enum import Enum
 from typing import List, Optional
-
-from pydantic import BaseModel, Field
 
 
 class TaskStatus(str, Enum):
@@ -14,23 +13,26 @@ class TaskStatus(str, Enum):
     blocked = "blocked"
 
 
-class Task(BaseModel):
+@dataclass
+class Task:
     id: str
     goal: str
-    acceptance_criteria: List[str] = Field(default_factory=list)
+    acceptance_criteria: List[str] = field(default_factory=list)
     context: str = ""
-    owner: str
+    owner: str = ""
     status: TaskStatus = TaskStatus.queued
     result: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-class FeedbackItem(BaseModel):
+@dataclass
+class FeedbackItem:
     content: str
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-class IntentSpec(BaseModel):
+@dataclass
+class IntentSpec:
     goal: str
     acceptance_criteria: List[str]
     context: str

@@ -1,31 +1,21 @@
 from __future__ import annotations
 
-from rich.console import Console
-from rich.table import Table
-
-from clock_engine.agents import ElonCEO
-from clock_engine.scheduler import ClockScheduler
-
-console = Console()
+from clock_engine import ClockEngine
 
 
-def show_status(scheduler: ClockScheduler) -> None:
-    table = Table(title="Clock Engine Status")
-    table.add_column("Task ID")
-    table.add_column("Owner")
-    table.add_column("Goal")
-    table.add_column("Result")
-    for task in scheduler.done[-10:]:
-        table.add_row(task.id, task.owner, task.goal, task.result or "")
-    console.print(table)
+def show_status(engine: ClockEngine) -> None:
+    print("\n=== Clock Engine Status ===")
+    print("Task ID | Owner | Goal | Result")
+    for task in engine.status_snapshot()[-10:]:
+        print(f"{task['id']} | {task['owner']} | {task['goal']} | {task['result'] or ''}")
+    print()
 
 
 def main() -> None:
-    ceo = ElonCEO()
-    scheduler = ClockScheduler()
+    engine = ClockEngine()
 
-    console.print("[bold green]Clockpla AI Demo 已启动[/bold green]")
-    console.print("输入意图 / status / feedback <内容> / exit")
+    print("Clockpla AI Demo 已启动")
+    print("输入意图 / status / feedback <内容> / exit")
 
     while True:
         user_input = input("> ").strip()
@@ -34,23 +24,18 @@ def main() -> None:
         if user_input == "exit":
             break
         if user_input == "status":
-            show_status(scheduler)
+            show_status(engine)
             continue
         if user_input.startswith("feedback "):
-            scheduler.add_feedback(user_input.removeprefix("feedback "))
-            console.print("[cyan]反馈已记录[/cyan]")
+            engine.scheduler.add_feedback(user_input.removeprefix("feedback "))
+            print("反馈已记录")
             continue
 
-        spec = ceo.parse_intent(user_input)
-        tasks = ceo.decompose(spec)
-        scheduler.push_tasks(tasks)
+        result = engine.submit_intent(user_input)
+        for line in result["executed"]:
+            print(line)
 
-        while scheduler.queue:
-            report = scheduler.tick()
-            if report.get("task"):
-                console.print(f"[yellow]{report['task']}[/yellow]")
-
-    console.print("[bold]已退出。[/bold]")
+    print("已退出。")
 
 
 if __name__ == "__main__":
