@@ -47,3 +47,17 @@ python app.py
 - `clock_engine/engine.py`：统一业务入口（提交意图/状态快照）
 - `clock_engine/storage.py`：JSON 状态持久化组件
 - `tests/test_engine.py`：核心流程测试
+
+
+## 日志（Loguru）
+
+- 默认输出最详细 `TRACE` 级别日志。
+- 每个动作（意图解析、任务拆分、调度 tick、worker 执行、反馈扫描）都会写入日志。
+- 日志文件：
+  - `logs/clockpla.trace.log`（文本）
+  - `logs/clockpla.jsonl`（结构化 JSON）
+- 可通过环境变量调整：
+  - `CLOCKPLA_LOG_LEVEL`（默认 `TRACE`）
+  - `CLOCKPLA_LOG_DIR`（默认 `logs`）
+  - `CLOCKPLA_LOG_RETENTION`（默认 `14 days`）
+  - `CLOCKPLA_LOG_ROTATION`（默认 `50 MB`）
